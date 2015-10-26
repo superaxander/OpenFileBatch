@@ -1,44 +1,66 @@
 package net.alexanders.openfilebatch.gui;
 
+import net.alexanders.openfilebatch.*;
+import net.alexanders.openfilebatch.Action;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.io.IOException;
 
-public class NewActionWindow extends JFrame implements ActionListener
-{
+public class NewActionWindow extends JFrame implements ActionListener, ItemListener {
     public static final String[] filter_options = {"None", "Starts With", "Ends With", "Contains", "Pattern", "Equals"};
-    public static final String[] action_options = {"Move", "Copy", "Delete", "Append", "Prepend", "Search and Replace"};
-
+    public static final String[] action_options = {"Move", "Copy", "Delete", "Append", "Prepend", "Search Replace"};
+    private JLabel from_label;
+    private JTextField from_path;
+    private JLabel to_label;
+    private JTextField to_path;
+    private JComboBox<String> filter_combobox;
+    private JTextField filter_value;
+    private JLabel overwrite_label;
+    private JCheckBox overwrite_checkbox;
+    private JLabel action_label;
+    private JComboBox<String> action_combobox;
+    private JButton save_button;
+    private JButton execute_button;
+    private JTextField action_value1;
+    private JTextField action_value2;
+    private JButton cancel_button;
+    private JLabel placeholder_label;
+    private boolean overwrite = false;
     public NewActionWindow()
     {
         super();
         this.setTitle("OpenFileBatch-New Action");
         this.getContentPane().setLayout(new GridLayout(4,4));
-        JLabel from_label = new JLabel("From:");
-        JTextField from_path = new JTextField();
-        JLabel to_label = new JLabel("To:");
-        JTextField to_path = new JTextField();
-        JComboBox<String> filter_combobox = new JComboBox<>(filter_options);
+        from_label = new JLabel("From:");
+        from_path = new JTextField();
+        to_label = new JLabel("To:");
+        to_path = new JTextField();
+        filter_combobox = new JComboBox<>(filter_options);
             filter_combobox.setSelectedItem(filter_options[0]);
-        JTextField filter_value = new JTextField();
-        JLabel overwrite_label = new JLabel("Overwrite:");
-        JCheckBox overwrite_checkbox = new JCheckBox();
-        JLabel action_label = new JLabel("Action:");
-        JComboBox<String> action_combobox = new JComboBox<>(action_options);
+        filter_value = new JTextField();
+        overwrite_label = new JLabel("Overwrite:");
+        overwrite_checkbox = new JCheckBox();
+            overwrite_checkbox.addItemListener(this);
+        action_label = new JLabel("Action:");
+        action_combobox = new JComboBox<>(action_options);
             action_combobox.setSelectedItem(action_options[0]);
-        JButton save_button = new JButton("Save");
+        save_button = new JButton("Save");
             save_button.setActionCommand("Save");
             save_button.addActionListener(this);
-        JButton execute_button = new JButton("Execute");
+        execute_button = new JButton("Execute");
             execute_button.setActionCommand("Execute");
             execute_button.addActionListener(this);
-        JTextField action_value1 = new JTextField();
-        JTextField action_value2 = new JTextField();
-        JButton cancel_button = new JButton("Cancel");
+        action_value1 = new JTextField();
+        action_value2 = new JTextField();
+        cancel_button = new JButton("Cancel");
             cancel_button.setActionCommand("Cancel");
             cancel_button.addActionListener(this);
-        JLabel placeholder_label = new JLabel();
+        placeholder_label = new JLabel();
         this.getContentPane().add(from_label);
         this.getContentPane().add(from_path);
         this.getContentPane().add(to_label);
@@ -60,6 +82,25 @@ public class NewActionWindow extends JFrame implements ActionListener
     @Override
     public void actionPerformed(ActionEvent e)
     {
+        if(e.getActionCommand().equals("Save"))
+        {
+        String filename = FileOperationHelper.getFreeName(".");
+            try {
+                BatchFileFactory.generateJSONAction(filename, new Action(new FileSelector(from_path.getText(), new FileSelector.Filter(FileSelector.filterTypes.valueOf(filter_combobox.getSelectedItem().toString().toUpperCase().replaceAll(" ", "_")),
+                                                    filter_value.getText())), to_path.getText(), Action.actionTypes.valueOf(action_combobox.getSelectedItem().toString().replaceAll(" ", "_")), overwrite, action_value1.getText(), action_value2.getText()));
+                if(System.getProperty("os.name").contains("Windows"))
+                {
+                    //TODO: generate windows bash file
+                }
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
 
+    @Override
+    public void itemStateChanged(ItemEvent e)
+    {
+        overwrite = (e.getStateChange() == ItemEvent.SELECTED);
     }
 }
