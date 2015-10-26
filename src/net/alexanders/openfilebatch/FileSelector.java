@@ -8,7 +8,7 @@ public class FileSelector
 {
     public enum filterTypes
     {
-        STARTS_WITH, ENDS_WITH, CONTAINS, PATTERN, EQUALS
+        STARTS_WITH, ENDS_WITH, CONTAINS, PATTERN, EQUALS, NONE
     }
 
     public static class Filter
@@ -31,6 +31,7 @@ public class FileSelector
                 case CONTAINS: return filename.contains(value);
                 case PATTERN: return filename.matches(value);
                 case EQUALS: return filename.equals(value);
+                case NONE: return true;
                 default: return false;
             }
         }

@@ -38,6 +38,10 @@ public class ControlWindow extends JFrame implements ActionListener
         switch(e.getActionCommand())
         {
             case "New":
+                NewActionWindow actionWindow = new NewActionWindow();
+                actionWindow.pack();
+                actionWindow.setSize(520, 200);
+                actionWindow.setVisible(true);
                 break;
             case "Modify":
                 break;
