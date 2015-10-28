@@ -2,6 +2,8 @@ package net.alexanders.openfilebatch;
 
 import com.sun.istack.internal.Nullable;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -38,7 +40,11 @@ public class Action
             this.value1 = value1;
             this.value2 = value2;
         }else{
-            throw new IOException("Selected directory is not a directory or doesn't exist.");
+            JDialog errorDialog = new JDialog((Frame)null, "Error Occured");
+            errorDialog.getContentPane().add(new JLabel("Selected output directory doesn't exist"));
+            errorDialog.pack();
+            errorDialog.setVisible(true);
+            throw new IOException("IGNORE THIS");
         }
     }
 

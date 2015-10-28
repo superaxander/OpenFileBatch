@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
 import java.io.IOException;
 
 public class NewActionWindow extends JFrame implements ActionListener, ItemListener {
@@ -84,16 +85,21 @@ public class NewActionWindow extends JFrame implements ActionListener, ItemListe
     {
         if(e.getActionCommand().equals("Save"))
         {
-        String filename = FileOperationHelper.getFreeName(".");
+        String json_filename = FileOperationHelper.getFreeName(".");
             try {
-                BatchFileFactory.generateJSONAction(filename, new Action(new FileSelector(from_path.getText(), new FileSelector.Filter(FileSelector.filterTypes.valueOf(filter_combobox.getSelectedItem().toString().toUpperCase().replaceAll(" ", "_")),
-                                                    filter_value.getText())), to_path.getText(), Action.actionTypes.valueOf(action_combobox.getSelectedItem().toString().replaceAll(" ", "_")), overwrite, action_value1.getText(), action_value2.getText()));
+                BatchFileFactory.generateJSONAction(json_filename, new Action(new FileSelector(from_path.getText(), new FileSelector.Filter(FileSelector.filterTypes.valueOf(filter_combobox.getSelectedItem().toString().toUpperCase().replaceAll(" ", "_")),
+                                                    filter_value.getText())), to_path.getText(), Action.actionTypes.valueOf(action_combobox.getSelectedItem().toString().replaceAll(" ", "_").toUpperCase()), overwrite, action_value1.getText(), action_value2.getText()));
                 if(System.getProperty("os.name").contains("Windows"))
                 {
-                    //TODO: generate windows bash file
+                    FileDialog fileDialog = new FileDialog(this, "Choose a save location", FileDialog.SAVE);
+                    fileDialog.setVisible(true);
+                    if(fileDialog.getFile() != null)
+                        BatchFileFactory.generateWindowsBatchFile(new File(fileDialog.getDirectory()+fileDialog.getFile()), json_filename);
                 }
-            } catch (IOException e1) {
-                e1.printStackTrace();
+                //TODO: include more operating systems
+            } catch (IOException ex)
+            {
+                ex.printStackTrace();//Catch the IOException that stops the Action to be created when the output folder doesn't exist
             }
         }
     }

@@ -7,9 +7,12 @@ import java.awt.*;
 public class Main
 {
     public static final Dimension size = new Dimension(275, 128);
+    public static final String jar_location = "ANERROROCCURED";
 
     public static void main(String[] args)
     {
+        //TODO: execute json file specified in args
+        //TODO: get the location of this jar from a config file created during setup
         ControlWindow controlWindow = new ControlWindow();
                 controlWindow.pack();
                 controlWindow.setSize(size);
